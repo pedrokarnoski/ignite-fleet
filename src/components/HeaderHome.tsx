@@ -10,7 +10,7 @@ import { colors } from "@/styles/colors";
 
 import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
 
-export function Header() {
+export function HeaderHome() {
   const user = useUser();
   const app = useApp();
   const insets = useSafeAreaInsets();

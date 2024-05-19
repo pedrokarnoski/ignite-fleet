@@ -1,5 +1,6 @@
 import { View } from "react-native";
 
+import { RealmProvider } from "@/lib/realm";
 import { AppProvider, UserProvider } from "@realm/react";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -18,7 +19,9 @@ export default function App() {
       <SafeAreaProvider>
         <View className="flex-1">
           <UserProvider fallback={SignIn}>
-            <Routes />
+            <RealmProvider>
+              <Routes />
+            </RealmProvider>
           </UserProvider>
           <StatusBar style="auto" />
         </View>
