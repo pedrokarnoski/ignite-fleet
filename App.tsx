@@ -2,22 +2,27 @@ import { View } from "react-native";
 
 import { AppProvider, UserProvider } from "@realm/react";
 
-import { Home } from "@/screens/Home";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import { SignIn } from "@/screens/SignIn";
 
 import { StatusBar } from "expo-status-bar";
+
+import { Routes } from "@/routes";
 
 import "@/styles/global.css";
 
 export default function App() {
   return (
     <AppProvider id={String(process.env.EXPO_PUBLIC_REALM_APP_ID)}>
-      <View className="flex-1">
-        <UserProvider fallback={SignIn}>
-          <Home />
-        </UserProvider>
-        <StatusBar style="auto" />
-      </View>
+      <SafeAreaProvider>
+        <View className="flex-1">
+          <UserProvider fallback={SignIn}>
+            <Routes />
+          </UserProvider>
+          <StatusBar style="auto" />
+        </View>
+      </SafeAreaProvider>
     </AppProvider>
   );
 }
