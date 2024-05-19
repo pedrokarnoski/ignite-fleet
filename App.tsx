@@ -1,16 +1,23 @@
-import { View } from 'react-native';
+import { View } from "react-native";
 
-import { SignIn } from '@/screens/SignIn';
+import { AppProvider, UserProvider } from "@realm/react";
 
-import { StatusBar } from 'expo-status-bar';
+import { Home } from "@/screens/Home";
+import { SignIn } from "@/screens/SignIn";
+
+import { StatusBar } from "expo-status-bar";
 
 import "@/styles/global.css";
 
 export default function App() {
   return (
-    <View className='flex-1'>
-      <SignIn />
-      <StatusBar style="auto" />
-    </View>
+    <AppProvider id={String(process.env.EXPO_PUBLIC_REALM_APP_ID)}>
+      <View className="flex-1">
+        <UserProvider fallback={SignIn}>
+          <Home />
+        </UserProvider>
+        <StatusBar style="auto" />
+      </View>
+    </AppProvider>
   );
 }

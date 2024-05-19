@@ -6,14 +6,17 @@ import { Ionicons } from "@expo/vector-icons";
 import { Button } from "@/components/Button";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { Realm, useApp } from "@realm/react";
 
 GoogleSignin.configure({
   scopes: ["email", "profile"],
-  webClientId: process.env.WEB_CLIENT_ID,
-  iosClientId: process.env.IOS_CLIENT_ID,
+  webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
 });
 
 export function SignIn() {
+  const app = useApp();
+
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   async function handleGoogleSignIn() {
@@ -23,17 +26,14 @@ export function SignIn() {
       const { idToken } = await GoogleSignin.signIn();
 
       if (idToken) {
+        const credentials = Realm.Credentials.jwt(idToken);
+
+        await app.logIn(credentials);
       } else {
         Alert.alert("Entrar", "Erro ao fazer login com o Google.");
 
         setIsAuthenticating(false);
-
-        return;
       }
-
-      setIsAuthenticating(false);
-
-      Alert.alert("Entrar", "Usuário autenticado com sucesso.");
     } catch (error) {
       console.error(error);
 
