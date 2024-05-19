@@ -17,7 +17,7 @@ export default function App() {
   return (
     <AppProvider id={String(process.env.EXPO_PUBLIC_REALM_APP_ID)}>
       <SafeAreaProvider>
-        <View className="flex-1">
+        <View className="flex-1 bg-gray-800">
           <UserProvider fallback={SignIn}>
             <RealmProvider>
               <Routes />

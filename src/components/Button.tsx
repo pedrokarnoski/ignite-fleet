@@ -66,7 +66,7 @@ function Button({
   ...props
 }: ButtonProps) {
   return (
-    <TouchableOpacity activeOpacity={0.8} disabled={isLoading} {...props}>
+    <TouchableOpacity activeOpacity={0.7} disabled={isLoading} {...props}>
       <View
         className={cn(
           buttonVariants({ variant, size, className }),

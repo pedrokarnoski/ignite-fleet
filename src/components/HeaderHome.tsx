@@ -45,7 +45,7 @@ export function HeaderHome() {
             </Text>
           </View>
         </View>
-        <TouchableOpacity onPress={handleLogout}>
+        <TouchableOpacity activeOpacity={0.7} onPress={handleLogout}>
           <Ionicons name="exit-outline" size={24} color={colors.gray[100]} />
         </TouchableOpacity>
       </View>
