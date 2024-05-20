@@ -1,3 +1,5 @@
+import "react-native-get-random-values";
+
 import { View } from "react-native";
 
 import { RealmProvider } from "@/lib/realm";
