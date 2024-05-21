@@ -56,6 +56,7 @@ export function SignIn() {
 
         <View className="w-full p-8">
           <Button
+            variant="default"
             label="Entrar com Google"
             isLoading={isAuthenticating}
             icon={<Ionicons name="logo-google" size={20} color="white" />}

@@ -18,7 +18,7 @@ export function Home() {
 
   function handleRegisterMovement() {
     if (vehicleInUse?._id) {
-      // return navigate("");
+      return navigate("arrival", { id: vehicleInUse?._id.toString() });
     } else {
       navigate("departure");
     }

@@ -106,6 +106,7 @@ export function Departure() {
             />
 
             <Button
+              variant="default"
               label="Registrar saída"
               isLoading={isRegistering}
               icon={<Ionicons name="checkmark-done" size={20} color="white" />}

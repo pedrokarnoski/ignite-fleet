@@ -11,19 +11,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-mid",
-        ghost: "border border-green-500",
-        link: "underline-offset-4",
-      },
-      size: {
-        default: "h-14 px-4",
-        sm: "h-8 px-2",
-        lg: "h-12 px-8",
+        default: "bg-brand-mid h-14 px-4",
+        icon: "h-14 w-14 bg-gray-600",
       },
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
     },
   }
 );
@@ -32,35 +25,27 @@ const buttonTextVariants = cva("text-center font-medium", {
   variants: {
     variant: {
       default: "text-white",
-      ghost: "text-green-500",
-      link: "text-gray-100",
-    },
-    size: {
-      default: "text-base",
-      sm: "text-sm",
-      lg: "text-xl",
+      icon: "text-green-500",
     },
   },
   defaultVariants: {
     variant: "default",
-    size: "default",
   },
 });
 
 interface ButtonProps
   extends React.ComponentPropsWithoutRef<typeof TouchableOpacity>,
     VariantProps<typeof buttonVariants> {
-  label: string;
+  label?: string;
   labelClasses?: string;
   isLoading?: boolean;
-  icon?: React.ReactNode;
+  icon?: JSX.Element;
 }
 function Button({
   label,
   labelClasses,
   className,
   variant,
-  size,
   isLoading,
   icon,
   ...props
@@ -69,7 +54,7 @@ function Button({
     <TouchableOpacity activeOpacity={0.7} disabled={isLoading} {...props}>
       <View
         className={cn(
-          buttonVariants({ variant, size, className }),
+          buttonVariants({ variant, className }),
           isLoading ? "opacity-50" : "opacity-100"
         )}
       >
@@ -78,17 +63,18 @@ function Button({
         ) : (
           <View className="flex-row gap-2">
             {icon && icon}
-            <Text
-              className={cn(
-                buttonTextVariants({
-                  variant,
-                  size,
-                  className: labelClasses,
-                })
-              )}
-            >
-              {label}
-            </Text>
+            {variant === "default" && (
+              <Text
+                className={cn(
+                  buttonTextVariants({
+                    variant,
+                    className: labelClasses,
+                  })
+                )}
+              >
+                {label}
+              </Text>
+            )}
           </View>
         )}
       </View>
