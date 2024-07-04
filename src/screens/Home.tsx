@@ -41,6 +41,10 @@ export function Home() {
   }
 
   useEffect(() => {
+    fetchVehicleInUse();
+  }, []);
+
+  useEffect(() => {
     realm.addListener("change", () => fetchVehicleInUse());
 
     return () => {

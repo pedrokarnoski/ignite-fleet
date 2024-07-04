@@ -47,6 +47,27 @@ export function Arrival() {
     }
   }
 
+  function handleArrivalRegister() {
+    try {
+      if (!historic) {
+        throw new Error("Veículo não encontrado.");
+      }
+
+      realm.write(() => {
+        if (historic) {
+          historic.status = "arrival";
+          historic.updated_at = new Date();
+        }
+      });
+
+      Alert.alert("Sucesso", "Chegada registrada com sucesso!");
+
+      goBack();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível registrar a chegada do veículo.");
+    }
+  }
+
   return (
     <View className="flex-1 bg-gray-800">
       <Header title="Chegada" />
@@ -70,7 +91,11 @@ export function Arrival() {
             icon={<Feather name="x" size={24} color={colors["brand-light"]} />}
           />
           <View className="flex-1">
-            <Button variant="default" label="Registrar chegada" />
+            <Button
+              onPress={handleArrivalRegister}
+              variant="default"
+              label="Registrar chegada"
+            />
           </View>
         </View>
       </View>
