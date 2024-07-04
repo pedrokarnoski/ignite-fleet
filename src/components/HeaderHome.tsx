@@ -15,7 +15,7 @@ export function HeaderHome() {
   const app = useApp();
   const insets = useSafeAreaInsets();
 
-  const firstLetter = user?.profile.name.charAt(0).toUpperCase();
+  const firstLetter = user.profile.name?.charAt(0).toUpperCase();
 
   function handleLogout() {
     app.currentUser?.logOut();

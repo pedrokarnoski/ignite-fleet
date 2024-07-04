@@ -1,10 +1,10 @@
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { Feather } from "@expo/vector-icons";
 
-import { useObject } from "@/lib/realm";
+import { useObject, useRealm } from "@/lib/realm";
 import { Historic } from "@/lib/realm/schemas/Historic";
 import { BSON } from "realm";
 
@@ -21,8 +21,31 @@ export function Arrival() {
   const route = useRoute();
 
   const { id } = route.params as RouteParamsProps;
+  const { goBack } = useNavigation();
 
+  const realm = useRealm();
   const historic = useObject(Historic, new BSON.UUID(id));
+
+  function handleRemoveVehicleUsage() {
+    Alert.alert("Cancelar", "Cancelar a utilização do veículo?", [
+      { text: "Não", style: "cancel" },
+      { text: "Sim", onPress: () => removeVehicleUsage() },
+    ]);
+  }
+
+  function removeVehicleUsage() {
+    try {
+      realm.write(() => {
+        if (historic) {
+          realm.delete(historic);
+        }
+      });
+
+      goBack();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível cancelar a utilização do veículo.");
+    }
+  }
 
   return (
     <View className="flex-1 bg-gray-800">
@@ -42,6 +65,7 @@ export function Arrival() {
 
         <View className="w-full flex-row mt-8 gap-4">
           <Button
+            onPress={handleRemoveVehicleUsage}
             variant="icon"
             icon={<Feather name="x" size={24} color={colors["brand-light"]} />}
           />
