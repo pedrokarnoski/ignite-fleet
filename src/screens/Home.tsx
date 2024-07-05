@@ -11,6 +11,7 @@ import { HeaderHome } from "@/components/HeaderHome";
 import { HistoricCard, HistoricCardProps } from "@/components/HistoricCard";
 import { useToast } from "@/components/Toast";
 
+import { useUser } from "@realm/react";
 import dayjs from "dayjs";
 
 export function Home() {
@@ -19,6 +20,7 @@ export function Home() {
 
   const realm = useRealm();
   const historic = useQuery(Historic);
+  const user = useUser();
 
   const [vehicleInUse, setVehicleInUse] = useState<Historic | null>(null);
   const [vehicleHistoric, setVehicleHistoric] = useState<HistoricCardProps[]>(
@@ -94,6 +96,16 @@ export function Home() {
   useEffect(() => {
     fetchHistoric();
   }, [historic]);
+
+  useEffect(() => {
+    realm.subscriptions.update((mutableSubs, realm) => {
+      const historicByUserQuery = realm
+        .objects<Historic>("Historic")
+        .filtered(`user = "${user!.id}"`);
+
+      mutableSubs.add(historicByUserQuery, { name: "historicByUser" });
+    });
+  }, [realm]);
 
   return (
     <View className="flex-1 items-center bg-gray-800">
