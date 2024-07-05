@@ -4,8 +4,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { Feather } from "@expo/vector-icons";
 
-import { useObject, useRealm } from "@/lib/realm";
-import { Historic } from "@/lib/realm/schemas/Historic";
+import { useObject, useRealm } from "@/libs/realm";
+import { Historic } from "@/libs/realm/schemas/Historic";
 import { BSON } from "realm";
 
 import { Button } from "@/components/Button";
@@ -25,6 +25,8 @@ export function Arrival() {
 
   const realm = useRealm();
   const historic = useObject(Historic, new BSON.UUID(id));
+
+  const title = historic?.status === "departure" ? "Chegada" : "Detalhes";
 
   function handleRemoveVehicleUsage() {
     Alert.alert("Cancelar", "Cancelar a utilização do veículo?", [
@@ -70,7 +72,7 @@ export function Arrival() {
 
   return (
     <View className="flex-1 bg-gray-800">
-      <Header title="Chegada" />
+      <Header title={title} />
 
       <View className="flex-grow p-8">
         <Text className="text-gray-300 text-sm mt-8 mb-1">
@@ -84,20 +86,24 @@ export function Arrival() {
           {historic?.description}
         </Text>
 
-        <View className="w-full flex-row mt-8 gap-4">
-          <Button
-            onPress={handleRemoveVehicleUsage}
-            variant="icon"
-            icon={<Feather name="x" size={24} color={colors["brand-light"]} />}
-          />
-          <View className="flex-1">
+        {historic?.status === "departure" && (
+          <View className="w-full flex-row mt-8 gap-4">
             <Button
-              onPress={handleArrivalRegister}
-              variant="default"
-              label="Registrar chegada"
+              onPress={handleRemoveVehicleUsage}
+              variant="icon"
+              icon={
+                <Feather name="x" size={24} color={colors["brand-light"]} />
+              }
             />
+            <View className="flex-1">
+              <Button
+                onPress={handleArrivalRegister}
+                variant="default"
+                label="Registrar chegada"
+              />
+            </View>
           </View>
-        </View>
+        )}
       </View>
     </View>
   );

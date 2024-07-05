@@ -4,7 +4,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../lib/utils";
+import { cn } from "../libs/utils";
 
 const buttonVariants = cva(
   "flex flex-row items-center justify-center rounded-md",

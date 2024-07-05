@@ -1,8 +1,9 @@
 import "react-native-get-random-values";
+import "./src/libs/dayjs";
 
 import { View } from "react-native";
 
-import { RealmProvider } from "@/lib/realm";
+import { RealmProvider } from "@/libs/realm";
 import { AppProvider, UserProvider } from "@realm/react";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";

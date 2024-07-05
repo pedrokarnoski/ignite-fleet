@@ -9,8 +9,8 @@ import {
   View,
 } from "react-native";
 
-import { useRealm } from "@/lib/realm";
-import { Historic } from "@/lib/realm/schemas/Historic";
+import { useRealm } from "@/libs/realm";
+import { Historic } from "@/libs/realm/schemas/Historic";
 import { useUser } from "@realm/react";
 
 import { Ionicons } from "@expo/vector-icons";
