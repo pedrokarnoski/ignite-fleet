@@ -3,6 +3,8 @@ import "./src/libs/dayjs";
 
 import { ActivityIndicator, View } from "react-native";
 
+import { useNetInfo } from "@react-native-community/netinfo";
+
 import { ToastProvider } from "@/components/Toast";
 
 import { RealmProvider, syncConfig } from "@/libs/realm";
@@ -16,13 +18,19 @@ import { StatusBar } from "expo-status-bar";
 
 import { Routes } from "@/routes";
 
+import { TopMessage } from "@/components/TopMessage";
 import { colors } from "@/styles/colors";
+
 import "@/styles/global.css";
 
 export default function App() {
+  const netInfo = useNetInfo();
+
   return (
     <AppProvider id={String(process.env.EXPO_PUBLIC_REALM_APP_ID)}>
       <SafeAreaProvider>
+        {!netInfo && <TopMessage icon="wifi-off" title="Você está off-line" />}
+
         <ToastProvider position="bottom">
           <View className="flex-1 bg-gray-800">
             <UserProvider fallback={SignIn}>

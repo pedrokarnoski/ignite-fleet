@@ -20,7 +20,7 @@ export function Header({ title }: HeaderProps) {
 
   return (
     <View style={{ paddingTop }} className="w-full p-8 bg-gray-700">
-      <View className="flex-row justify-between gap-4 z-1">
+      <View className="flex-row justify-between gap-4">
         <TouchableOpacity activeOpacity={0.7} onPress={() => goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors["brand-light"]} />
         </TouchableOpacity>
