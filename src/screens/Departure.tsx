@@ -1,13 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { useRef, useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TextInput,
-  View,
-} from "react-native";
+import { Alert, ScrollView, TextInput, View } from "react-native";
+
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { useRealm } from "@/libs/realm";
 import { Historic } from "@/libs/realm/schemas/Historic";
@@ -82,9 +77,7 @@ export function Departure() {
     <View className="flex-1 bg-gray-800">
       <Header title="Saída" />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "android" ? "height" : "position"}
-      >
+      <KeyboardAwareScrollView extraHeight={80}>
         <ScrollView>
           <View className="w-full gap-4 p-8">
             <LicensePlateInput
@@ -95,6 +88,7 @@ export function Departure() {
               onChangeText={setLicensePlate}
               returnKeyType="next"
             />
+
             <TextAreaInput
               ref={descriptionRef}
               label="Finalidade"
@@ -114,7 +108,7 @@ export function Departure() {
             />
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
