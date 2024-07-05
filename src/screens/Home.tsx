@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, FlatList, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -9,9 +9,12 @@ import { Historic } from "@/libs/realm/schemas/Historic";
 import { CarStatus } from "@/components/CarStatus";
 import { HeaderHome } from "@/components/HeaderHome";
 import { HistoricCard, HistoricCardProps } from "@/components/HistoricCard";
+import { useToast } from "@/components/Toast";
+
 import dayjs from "dayjs";
 
 export function Home() {
+  const { toast } = useToast();
   const { navigate } = useNavigation();
 
   const realm = useRealm();
@@ -36,10 +39,7 @@ export function Home() {
 
       setVehicleInUse(vehicle);
     } catch (err) {
-      Alert.alert(
-        "Veículo em uso",
-        "Não foi possível carregar o veículo em uso."
-      );
+      toast("Não foi possível carregar o veículo em uso.", "destructive");
 
       console.error(err);
     }
@@ -64,9 +64,9 @@ export function Home() {
 
       setVehicleHistoric(formattedHistoric);
     } catch (error) {
-      Alert.alert(
-        "Histórico",
-        "Não foi possível carregar o histórico de veículos."
+      toast(
+        "Não foi possível carregar o histórico de veículos.",
+        "destructive"
       );
 
       console.error(error);

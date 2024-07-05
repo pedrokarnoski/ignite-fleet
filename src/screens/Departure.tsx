@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useRef, useState } from "react";
-import { Alert, ScrollView, TextInput, View } from "react-native";
+import { ScrollView, TextInput, View } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -15,9 +15,12 @@ import { Header } from "@/components/Header";
 import { LicensePlateInput } from "@/components/LicensePlateInput";
 import { TextAreaInput } from "@/components/TextAreaInput";
 
+import { useToast } from "@/components/Toast";
 import { validateLicensePlate } from "@/utils/validateLicensePlate";
 
 export function Departure() {
+  const { toast } = useToast();
+
   const descriptionRef = useRef<TextInput>(null);
   const licensePlateRef = useRef<TextInput>(null);
 
@@ -35,16 +38,16 @@ export function Departure() {
       if (!validateLicensePlate(licensePlate)) {
         licensePlateRef.current?.focus();
 
-        return Alert.alert(
-          "Placa inválida",
-          "A placa é inválida. Por favor, verifique a placa do veículo."
+        return toast(
+          "A placa é inválida. Por favor, verifique a placa do veículo.",
+          "destructive"
         );
       }
 
       if (description.trim().length === 0) {
-        return Alert.alert(
-          "Finalidade",
-          "Por favor, informe a finalidade da utilização do veículo."
+        return toast(
+          "Por favor, informe a finalidade da utilização do veículo.",
+          "destructive"
         );
       }
 
@@ -61,7 +64,7 @@ export function Departure() {
         );
       });
 
-      Alert.alert("Saída", "Saída do veículo registrada.");
+      toast("Saída do veículo registrada!", "success");
 
       goBack();
     } catch (err) {
@@ -69,7 +72,7 @@ export function Departure() {
 
       setIsRegistering(false);
 
-      Alert.alert("Erro", "Não foi possível registrar a saída do veículo.");
+      toast("Não foi possível registrar a saída do veículo.", "destructive");
     }
   }
 

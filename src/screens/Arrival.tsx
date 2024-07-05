@@ -11,6 +11,7 @@ import { BSON } from "realm";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 
+import { useToast } from "@/components/Toast";
 import { colors } from "@/styles/colors";
 
 type RouteParamsProps = {
@@ -19,6 +20,7 @@ type RouteParamsProps = {
 
 export function Arrival() {
   const route = useRoute();
+  const { toast } = useToast();
 
   const { id } = route.params as RouteParamsProps;
   const { goBack } = useNavigation();
@@ -45,7 +47,10 @@ export function Arrival() {
 
       goBack();
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível cancelar a utilização do veículo.");
+      toast(
+        "Não foi possível cancelar a utilização do veículo.",
+        "destructive"
+      );
     }
   }
 
@@ -62,11 +67,11 @@ export function Arrival() {
         }
       });
 
-      Alert.alert("Sucesso", "Chegada registrada com sucesso!");
+      toast("Chegada registrada com sucesso.", "success");
 
       goBack();
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível registrar a chegada do veículo.");
+      toast("Não foi possível registrar a chegada do veículo.", "destructive");
     }
   }
 
@@ -85,26 +90,24 @@ export function Arrival() {
         <Text className="text-gray-100 text-md text-justify">
           {historic?.description}
         </Text>
-
-        {historic?.status === "departure" && (
-          <View className="w-full flex-row mt-8 gap-4">
-            <Button
-              onPress={handleRemoveVehicleUsage}
-              variant="icon"
-              icon={
-                <Feather name="x" size={24} color={colors["brand-light"]} />
-              }
-            />
-            <View className="flex-1">
-              <Button
-                onPress={handleArrivalRegister}
-                variant="default"
-                label="Registrar chegada"
-              />
-            </View>
-          </View>
-        )}
       </View>
+
+      {historic?.status === "departure" && (
+        <View className="w-full flex-row p-8 mt-8 gap-4">
+          <Button
+            onPress={handleRemoveVehicleUsage}
+            variant="icon"
+            icon={<Feather name="x" size={24} color={colors["brand-light"]} />}
+          />
+          <View className="flex-1">
+            <Button
+              onPress={handleArrivalRegister}
+              variant="default"
+              label="Registrar chegada"
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }

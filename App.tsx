@@ -3,6 +3,8 @@ import "./src/libs/dayjs";
 
 import { View } from "react-native";
 
+import { ToastProvider } from "@/components/Toast";
+
 import { RealmProvider } from "@/libs/realm";
 import { AppProvider, UserProvider } from "@realm/react";
 
@@ -20,14 +22,16 @@ export default function App() {
   return (
     <AppProvider id={String(process.env.EXPO_PUBLIC_REALM_APP_ID)}>
       <SafeAreaProvider>
-        <View className="flex-1 bg-gray-800">
-          <UserProvider fallback={SignIn}>
-            <RealmProvider>
-              <Routes />
-            </RealmProvider>
-          </UserProvider>
-          <StatusBar style="auto" />
-        </View>
+        <ToastProvider position="bottom">
+          <View className="flex-1 bg-gray-800">
+            <UserProvider fallback={SignIn}>
+              <RealmProvider>
+                <Routes />
+              </RealmProvider>
+            </UserProvider>
+            <StatusBar style="auto" />
+          </View>
+        </ToastProvider>
       </SafeAreaProvider>
     </AppProvider>
   );

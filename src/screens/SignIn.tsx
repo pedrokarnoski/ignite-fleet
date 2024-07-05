@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Alert, ImageBackground, Text, View } from "react-native";
+import { ImageBackground, Text, View } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 
 import { Button } from "@/components/Button";
 
+import { useToast } from "@/components/Toast";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Realm, useApp } from "@realm/react";
 
@@ -16,6 +17,8 @@ GoogleSignin.configure({
 
 export function SignIn() {
   const app = useApp();
+
+  const { toast } = useToast();
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -30,7 +33,7 @@ export function SignIn() {
 
         await app.logIn(credentials);
       } else {
-        Alert.alert("Entrar", "Erro ao fazer login com o Google.");
+        toast("Erro ao fazer login com o Google.", "destructive");
 
         setIsAuthenticating(false);
       }
@@ -39,7 +42,7 @@ export function SignIn() {
 
       setIsAuthenticating(false);
 
-      Alert.alert("Entrar", "Erro ao fazer login com o Google.");
+      toast("Erro ao fazer login com o Google.", "destructive");
     }
   }
 
