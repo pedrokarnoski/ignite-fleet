@@ -29,7 +29,9 @@ export default function App() {
   return (
     <AppProvider id={String(process.env.EXPO_PUBLIC_REALM_APP_ID)}>
       <SafeAreaProvider>
-        {!netInfo && <TopMessage icon="wifi-off" title="Você está off-line" />}
+        {!netInfo.isConnected && (
+          <TopMessage icon="wifi-off" title="Você está off-line" />
+        )}
 
         <ToastProvider position="bottom">
           <View className="flex-1 bg-gray-800">

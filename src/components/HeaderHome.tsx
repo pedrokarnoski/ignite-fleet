@@ -8,14 +8,12 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { colors } from "@/styles/colors";
 
-import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
+import { Avatar, AvatarImage } from "./Avatar";
 
 export function HeaderHome() {
   const user = useUser();
   const app = useApp();
   const insets = useSafeAreaInsets();
-
-  const firstLetter = user.profile.name?.charAt(0).toUpperCase();
 
   function handleLogout() {
     app.currentUser?.logOut();
@@ -33,9 +31,6 @@ export function HeaderHome() {
                 uri: user?.profile.pictureUrl,
               }}
             />
-            <AvatarFallback textClassname="text-gray-100 text-2xl">
-              {firstLetter}
-            </AvatarFallback>
           </Avatar>
 
           <View>

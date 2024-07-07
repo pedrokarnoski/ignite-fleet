@@ -11,8 +11,15 @@ import { HeaderHome } from "@/components/HeaderHome";
 import { HistoricCard, HistoricCardProps } from "@/components/HistoricCard";
 import { useToast } from "@/components/Toast";
 
+import { TopMessage } from "@/components/TopMessage";
+import {
+  getLastSyncTimestamp,
+  saveLastSyncTimestamp,
+} from "@/libs/asyncStorage/syncStorage";
 import { useUser } from "@realm/react";
 import dayjs from "dayjs";
+import Toast from "react-native-toast-message";
+import { ProgressDirection, ProgressMode } from "realm";
 
 export function Home() {
   const { toast } = useToast();
@@ -26,6 +33,7 @@ export function Home() {
   const [vehicleHistoric, setVehicleHistoric] = useState<HistoricCardProps[]>(
     []
   );
+  const [percentageToSync, setPercentageToSync] = useState<string | null>(null);
 
   function handleRegisterMovement() {
     if (vehicleInUse?._id) {
@@ -47,12 +55,13 @@ export function Home() {
     }
   }
 
-  function fetchHistoric() {
+  async function fetchHistoric() {
     try {
       const response = historic.filtered(
         "status = 'arrival' SORT(created_at DESC)"
       );
 
+      const lastSync = await getLastSyncTimestamp();
       const formattedHistoric = response.map((item) => {
         return {
           id: item._id!.toString(),
@@ -60,23 +69,42 @@ export function Home() {
             "[Saída em] DD/MM/YYYY [às] HH:mm"
           ),
           licensePlate: item.license_plate,
-          isSync: false,
+          isSync: lastSync > item.updated_at.getTime(),
         };
       });
 
       setVehicleHistoric(formattedHistoric);
     } catch (error) {
-      toast(
-        "Não foi possível carregar o histórico de veículos.",
-        "destructive"
-      );
-
       console.error(error);
     }
   }
 
   function handleHistoricDetails(id: string) {
     navigate("arrival", { id });
+  }
+
+  async function progressNotification(
+    transferred: number,
+    transferable: number
+  ) {
+    const percentage = Math.round((transferred / transferable) * 100);
+
+    if (percentage === 100) {
+      await saveLastSyncTimestamp();
+
+      await fetchHistoric();
+
+      setPercentageToSync(null);
+
+      Toast.show({
+        type: "info",
+        text1: "Todos os dados estão sincronizados.",
+      });
+    }
+
+    if (percentage < 100) {
+      setPercentageToSync(`${percentage.toFixed(0)}% sincronizado`);
+    }
   }
 
   useEffect(() => {
@@ -101,14 +129,36 @@ export function Home() {
     realm.subscriptions.update((mutableSubs, realm) => {
       const historicByUserQuery = realm
         .objects<Historic>("Historic")
-        .filtered(`user = "${user!.id}"`);
+        .filtered(`user_id = "${user!.id}"`);
 
       mutableSubs.add(historicByUserQuery, { name: "historicByUser" });
     });
   }, [realm]);
 
+  useEffect(() => {
+    const syncSession = realm.syncSession;
+
+    if (!syncSession) {
+      return;
+    }
+
+    syncSession.addProgressNotification(
+      ProgressDirection.Upload,
+      ProgressMode.ReportIndefinitely,
+      progressNotification
+    );
+
+    return () => {
+      syncSession.removeProgressNotification(progressNotification);
+    };
+  }, [realm]);
+
   return (
     <View className="flex-1 items-center bg-gray-800">
+      {percentageToSync && (
+        <TopMessage icon="upload-cloud" title={percentageToSync} />
+      )}
+
       <HeaderHome />
 
       <View className="w-full px-8">
