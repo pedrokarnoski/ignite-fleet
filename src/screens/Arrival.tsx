@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -12,6 +13,7 @@ import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 
 import { useToast } from "@/components/Toast";
+import { getLastSyncTimestamp } from "@/libs/asyncStorage/syncStorage";
 import { colors } from "@/styles/colors";
 
 type RouteParamsProps = {
@@ -19,6 +21,8 @@ type RouteParamsProps = {
 };
 
 export function Arrival() {
+  const [dataNotSynced, setDataNotSynced] = useState(false);
+
   const route = useRoute();
   const { toast } = useToast();
 
@@ -75,6 +79,12 @@ export function Arrival() {
     }
   }
 
+  useEffect(() => {
+    getLastSyncTimestamp().then((lastSync) => {
+      setDataNotSynced(historic!.updated_at.getTime() > lastSync);
+    });
+  }, []);
+
   return (
     <View className="flex-1 bg-gray-800">
       <Header title={title} />
@@ -107,6 +117,13 @@ export function Arrival() {
             />
           </View>
         </View>
+      )}
+
+      {dataNotSynced && (
+        <Text className="text-gray-300 text-sm text-center mb-6">
+          Sincronização da{" "}
+          {historic?.status === "departure" ? "partida" : "chegada"} pendente
+        </Text>
       )}
     </View>
   );
