@@ -21,6 +21,7 @@ import { Header } from "@/components/Header";
 import { LicensePlateInput } from "@/components/LicensePlateInput";
 import { TextAreaInput } from "@/components/TextAreaInput";
 
+import { LocationInfo } from "@/components/LocationInfo";
 import { useToast } from "@/components/Toast";
 import { colors } from "@/styles/colors";
 import { getAddressLocation } from "@/utils/getAddressLocation";
@@ -46,6 +47,7 @@ export function Departure() {
   const [locationForegroundPermission, requestLocationForegroundPermission] =
     useForegroundPermissions();
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [currentAddress, setCurrentAddress] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
@@ -107,7 +109,9 @@ export function Departure() {
       (location) => {
         getAddressLocation(location.coords)
           .then((address) => {
-            console.log("address", address);
+            if (address) {
+              setCurrentAddress(address);
+            }
           })
           .finally(() => {
             setIsLoadingLocation(false);
@@ -155,6 +159,14 @@ export function Departure() {
       <KeyboardAwareScrollView extraHeight={80}>
         <ScrollView>
           <View className="w-full gap-4 p-8">
+            {currentAddress && (
+              <LocationInfo
+                label="Localização atual"
+                description={currentAddress}
+                icon="map-location-dot"
+              />
+            )}
+
             <LicensePlateInput
               ref={licensePlateRef}
               label="Placa do veículo"
