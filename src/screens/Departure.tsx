@@ -1,6 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -17,8 +23,14 @@ import { TextAreaInput } from "@/components/TextAreaInput";
 
 import { useToast } from "@/components/Toast";
 import { colors } from "@/styles/colors";
+import { getAddressLocation } from "@/utils/getAddressLocation";
 import { validateLicensePlate } from "@/utils/validateLicensePlate";
-import { useForegroundPermissions } from "expo-location";
+import {
+  LocationAccuracy,
+  LocationSubscription,
+  useForegroundPermissions,
+  watchPositionAsync,
+} from "expo-location";
 
 export function Departure() {
   const { toast } = useToast();
@@ -33,6 +45,7 @@ export function Departure() {
 
   const [locationForegroundPermission, requestLocationForegroundPermission] =
     useForegroundPermissions();
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [description, setDescription] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
@@ -84,6 +97,33 @@ export function Departure() {
     requestLocationForegroundPermission();
   }, []);
 
+  useEffect(() => {
+    if (!locationForegroundPermission?.granted) return;
+
+    let subscription: LocationSubscription;
+
+    watchPositionAsync(
+      { accuracy: LocationAccuracy.High, timeInterval: 1000 },
+      (location) => {
+        getAddressLocation(location.coords)
+          .then((address) => {
+            console.log("address", address);
+          })
+          .finally(() => {
+            setIsLoadingLocation(false);
+          });
+      }
+    ).then((sub) => {
+      subscription = sub;
+    });
+
+    return () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
+  }, [locationForegroundPermission]);
+
   if (!locationForegroundPermission?.granted) {
     return (
       <View className="flex-1 bg-gray-800">
@@ -96,6 +136,14 @@ export function Departure() {
             acessar a localização.
           </Text>
         </View>
+      </View>
+    );
+  }
+
+  if (isLoadingLocation) {
+    return (
+      <View className="flex-1 items-center justify-center bg-gray-800">
+        <ActivityIndicator color={colors["brand-light"]} size="large" />
       </View>
     );
   }
