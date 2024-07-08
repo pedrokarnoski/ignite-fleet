@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import { useRef, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, Text, TextInput, View } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -16,7 +16,9 @@ import { LicensePlateInput } from "@/components/LicensePlateInput";
 import { TextAreaInput } from "@/components/TextAreaInput";
 
 import { useToast } from "@/components/Toast";
+import { colors } from "@/styles/colors";
 import { validateLicensePlate } from "@/utils/validateLicensePlate";
+import { useForegroundPermissions } from "expo-location";
 
 export function Departure() {
   const { toast } = useToast();
@@ -29,6 +31,8 @@ export function Departure() {
 
   const { goBack } = useNavigation();
 
+  const [locationForegroundPermission, requestLocationForegroundPermission] =
+    useForegroundPermissions();
   const [description, setDescription] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
@@ -74,6 +78,26 @@ export function Departure() {
 
       toast("Não foi possível registrar a saída do veículo.", "destructive");
     }
+  }
+
+  useEffect(() => {
+    requestLocationForegroundPermission();
+  }, []);
+
+  if (!locationForegroundPermission?.granted) {
+    return (
+      <View className="flex-1 bg-gray-800">
+        <Header title="Saída" />
+
+        <View className="flex-1 items-center justify-center">
+          <Ionicons name="location" size={52} color={colors["brand-light"]} />
+          <Text className="text-white text-center m-4">
+            Para registrar a saída do veículo, precisamos da sua permissão para
+            acessar a localização.
+          </Text>
+        </View>
+      </View>
+    );
   }
 
   return (
