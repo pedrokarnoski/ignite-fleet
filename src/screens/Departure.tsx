@@ -22,12 +22,14 @@ import { LicensePlateInput } from "@/components/LicensePlateInput";
 import { TextAreaInput } from "@/components/TextAreaInput";
 
 import { LocationInfo } from "@/components/LocationInfo";
+import { Map } from "@/components/Map";
 import { useToast } from "@/components/Toast";
 import { colors } from "@/styles/colors";
 import { getAddressLocation } from "@/utils/getAddressLocation";
 import { validateLicensePlate } from "@/utils/validateLicensePlate";
 import {
   LocationAccuracy,
+  LocationObjectCoords,
   LocationSubscription,
   useForegroundPermissions,
   watchPositionAsync,
@@ -48,6 +50,8 @@ export function Departure() {
     useForegroundPermissions();
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
+  const [currentCoords, setCurrentCoords] =
+    useState<LocationObjectCoords | null>(null);
   const [description, setDescription] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
@@ -107,6 +111,8 @@ export function Departure() {
     watchPositionAsync(
       { accuracy: LocationAccuracy.High, timeInterval: 1000 },
       (location) => {
+        setCurrentCoords(location.coords);
+
         getAddressLocation(location.coords)
           .then((address) => {
             if (address) {
@@ -158,6 +164,8 @@ export function Departure() {
 
       <KeyboardAwareScrollView extraHeight={80}>
         <ScrollView>
+          {currentCoords && <Map coords={[currentCoords]} />}
+
           <View className="w-full gap-4 p-8">
             {currentAddress && (
               <LocationInfo
