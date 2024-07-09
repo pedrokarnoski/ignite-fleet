@@ -74,6 +74,13 @@ export function Departure() {
         );
       }
 
+      if (!currentCoords?.latitude || !currentCoords?.longitude) {
+        return toast(
+          "Não foi possível obter a localização atual. Por favor, tente novamente.",
+          "destructive"
+        );
+      }
+
       setIsRegistering(true);
 
       realm.write(() => {
