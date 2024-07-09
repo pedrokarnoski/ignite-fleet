@@ -15,6 +15,7 @@ import { Header } from "@/components/Header";
 import { useToast } from "@/components/Toast";
 import { getLastSyncTimestamp } from "@/libs/asyncStorage/syncStorage";
 import { colors } from "@/styles/colors";
+import { stopLocationTask } from "@/tasks/backgroundLocationTask";
 
 type RouteParamsProps = {
   id: string;
@@ -58,11 +59,13 @@ export function Arrival() {
     }
   }
 
-  function handleArrivalRegister() {
+  async function handleArrivalRegister() {
     try {
       if (!historic) {
         throw new Error("Veículo não encontrado.");
       }
+
+      await stopLocationTask();
 
       realm.write(() => {
         if (historic) {
