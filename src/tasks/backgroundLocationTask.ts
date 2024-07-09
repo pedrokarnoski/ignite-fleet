@@ -1,3 +1,4 @@
+import { saveStorageLocation } from "@/libs/asyncStorage/locationStorage";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 
@@ -17,9 +18,13 @@ TaskManager.defineTask(BACKGROUND_TASK_NAME, async ({ data, error }: any) => {
         longitude: coords.longitude,
         timestamp,
       };
+
+      await saveStorageLocation(currentLocation);
     }
   } catch (error) {
     console.error(error);
+
+    stopLocationTask();
   }
 });
 
