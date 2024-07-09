@@ -25,12 +25,14 @@ import { LocationInfo } from "@/components/LocationInfo";
 import { Map } from "@/components/Map";
 import { useToast } from "@/components/Toast";
 import { colors } from "@/styles/colors";
+import { startLocationTask } from "@/tasks/backgroundLocationTask";
 import { getAddressLocation } from "@/utils/getAddressLocation";
 import { validateLicensePlate } from "@/utils/validateLicensePlate";
 import {
   LocationAccuracy,
   LocationObjectCoords,
   LocationSubscription,
+  requestBackgroundPermissionsAsync,
   useForegroundPermissions,
   watchPositionAsync,
 } from "expo-location";
@@ -56,7 +58,7 @@ export function Departure() {
   const [licensePlate, setLicensePlate] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
 
-  function handleDepartureRegister() {
+  async function handleDepartureRegister() {
     try {
       if (!validateLicensePlate(licensePlate)) {
         licensePlateRef.current?.focus();
@@ -81,7 +83,18 @@ export function Departure() {
         );
       }
 
-      setIsRegistering(true);
+      const backgroundPermissions = await requestBackgroundPermissionsAsync();
+
+      if (!backgroundPermissions.granted) {
+        setIsRegistering(false);
+
+        return toast(
+          'É necessário permitir que o App tenha acesso localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo."',
+          "destructive"
+        );
+      }
+
+      await startLocationTask();
 
       realm.write(() => {
         realm.create(
