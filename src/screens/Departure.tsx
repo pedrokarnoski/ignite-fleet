@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   Text,
   TextInput,
@@ -19,14 +20,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 import { LicensePlateInput } from "@/components/LicensePlateInput";
-import { TextAreaInput } from "@/components/TextAreaInput";
-
 import { LocationInfo } from "@/components/LocationInfo";
 import { Map } from "@/components/Map";
+import { TextAreaInput } from "@/components/TextAreaInput";
 import { useToast } from "@/components/Toast";
+
 import { colors } from "@/styles/colors";
+
 import { startLocationTask } from "@/tasks/backgroundLocationTask";
 import { getAddressLocation } from "@/utils/getAddressLocation";
+import { openSettings } from "@/utils/openSettings";
 import { validateLicensePlate } from "@/utils/validateLicensePlate";
 import {
   LocationAccuracy,
@@ -88,9 +91,10 @@ export function Departure() {
       if (!backgroundPermissions.granted) {
         setIsRegistering(false);
 
-        return toast(
+        return Alert.alert(
+          "Localização",
           'É necessário permitir que o App tenha acesso localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo."',
-          "destructive"
+          [{ text: "Abrir configurações", onPress: openSettings }]
         );
       }
 
@@ -166,12 +170,20 @@ export function Departure() {
       <View className="flex-1 bg-gray-800">
         <Header title="Saída" />
 
-        <View className="flex-1 items-center justify-center">
+        <View className="flex-1 items-center justify-center gap-6 px-6">
           <Ionicons name="location" size={52} color={colors["brand-light"]} />
-          <Text className="text-white text-center m-4">
+
+          <Text className="text-white text-center">
             Para registrar a saída do veículo, precisamos da sua permissão para
             acessar a localização.
           </Text>
+          <View className="w-full">
+            <Button
+              variant="default"
+              label="Abrir configurações"
+              onPress={openSettings}
+            />
+          </View>
         </View>
       </View>
     );
