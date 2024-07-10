@@ -75,10 +75,13 @@ export function Arrival() {
         throw new Error("Veículo não encontrado.");
       }
 
+      const locations = await getStorageLocations();
+
       realm.write(() => {
         if (historic) {
           historic.status = "arrival";
           historic.updated_at = new Date();
+          historic.coords.push(...locations);
         }
       });
 
@@ -100,8 +103,12 @@ export function Arrival() {
 
     setDataNotSynced(updatedAt > lastSync);
 
-    const locationsStorage = await getStorageLocations();
-    setCoords(locationsStorage);
+    if (historic?.status === "departure") {
+      const locationsStorage = await getStorageLocations();
+      setCoords(locationsStorage);
+    } else {
+      setCoords(historic?.coords ?? []);
+    }
   }
 
   useEffect(() => {
