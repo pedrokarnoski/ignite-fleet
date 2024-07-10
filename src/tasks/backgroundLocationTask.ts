@@ -1,4 +1,7 @@
-import { saveStorageLocation } from "@/libs/asyncStorage/locationStorage";
+import {
+  removeStorageLocations,
+  saveStorageLocation,
+} from "@/libs/asyncStorage/locationStorage";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 
@@ -56,6 +59,7 @@ export async function stopLocationTask() {
 
     if (hasStarted) {
       await Location.stopLocationUpdatesAsync(BACKGROUND_TASK_NAME);
+      await removeStorageLocations();
     }
   } catch (error) {
     console.error(error);
