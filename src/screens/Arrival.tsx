@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 
 import dayjs from "dayjs";
 
@@ -41,6 +41,7 @@ export function Arrival() {
     {} as LocationInfoProps
   );
   const [arrival, setArrival] = useState<LocationInfoProps | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
 
   const route = useRoute();
   const { toast } = useToast();
@@ -147,11 +148,21 @@ export function Arrival() {
         ),
       });
     }
+
+    setIsLoadingLocation(false);
   }
 
   useEffect(() => {
     getLocationsInfo();
   }, [historic]);
+
+  if (isLoadingLocation) {
+    return (
+      <View className="flex-1 items-center justify-center bg-gray-800">
+        <ActivityIndicator color={colors["brand-light"]} size="large" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-800">
