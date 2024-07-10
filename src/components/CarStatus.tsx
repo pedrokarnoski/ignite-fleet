@@ -18,7 +18,7 @@ export function CarStatus({ licensePlate, ...rest }: CarStatusProps) {
       <View className="w-full flex-row items-center my-8 p-4 rounded-md bg-gray-700">
         <View className="w-20 h-20 rounded-md bg-gray-600 mr-3 justify-center items-center">
           <Ionicons
-            name={licensePlate ? "car-outline" : "key-outline"}
+            name={licensePlate ? "car" : "key"}
             size={48}
             color={colors["brand-light"]}
           />

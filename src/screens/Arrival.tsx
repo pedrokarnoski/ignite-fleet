@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
 
+import dayjs from "dayjs";
+
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { LatLng } from "react-native-maps";
 
@@ -14,15 +16,19 @@ import { getLastSyncTimestamp } from "@/libs/asyncStorage/syncStorage";
 import { useObject, useRealm } from "@/libs/realm";
 import { Historic } from "@/libs/realm/schemas/Historic";
 
+import { stopLocationTask } from "@/tasks/backgroundLocationTask";
+import { getAddressLocation } from "@/utils/getAddressLocation";
+
 import { BSON } from "realm";
 
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
+import { LocationInfoProps } from "@/components/LocationInfo";
+import { Locations } from "@/components/Locations";
+import { Map } from "@/components/Map";
 import { useToast } from "@/components/Toast";
 
-import { Map } from "@/components/Map";
 import { colors } from "@/styles/colors";
-import { stopLocationTask } from "@/tasks/backgroundLocationTask";
 
 type RouteParamsProps = {
   id: string;
@@ -31,6 +37,10 @@ type RouteParamsProps = {
 export function Arrival() {
   const [dataNotSynced, setDataNotSynced] = useState(false);
   const [coords, setCoords] = useState<LatLng[]>([]);
+  const [departure, setDeparture] = useState<LocationInfoProps>(
+    {} as LocationInfoProps
+  );
+  const [arrival, setArrival] = useState<LocationInfoProps | null>(null);
 
   const route = useRoute();
   const { toast } = useToast();
@@ -107,7 +117,35 @@ export function Arrival() {
       const locationsStorage = await getStorageLocations();
       setCoords(locationsStorage);
     } else {
-      setCoords(historic?.coords ?? []);
+      const coords = historic?.coords.map((coord) => ({
+        latitude: coord.latitude,
+        longitude: coord.longitude,
+      }));
+
+      setCoords(coords ?? []);
+    }
+
+    if (historic?.coords[0]) {
+      const departureStreetName = await getAddressLocation(historic?.coords[0]);
+
+      setDeparture({
+        label: `Saindo em ${departureStreetName ?? ""}`,
+        description: dayjs(new Date(historic?.coords[0].timestamp)).format(
+          "DD/MM/YYYY [às] HH:mm"
+        ),
+      });
+    }
+
+    if (historic?.status === "arrival") {
+      const lastLocation = historic?.coords[historic?.coords.length - 1];
+      const arrivalStreetName = await getAddressLocation(lastLocation);
+
+      setArrival({
+        label: `Chegando em ${arrivalStreetName ?? ""}`,
+        description: dayjs(new Date(lastLocation.timestamp)).format(
+          "DD/MM/YYYY [às] HH:mm"
+        ),
+      });
     }
   }
 
@@ -122,6 +160,8 @@ export function Arrival() {
       {coords?.length > 0 && <Map coords={coords} />}
 
       <View className="flex-grow p-8">
+        <Locations departure={departure} arrival={arrival} />
+
         <Text className="text-gray-300 text-sm mt-8 mb-1">
           Placa do veículo
         </Text>
